@@ -14,6 +14,8 @@ class ScanPage extends StatefulWidget {
 }
 
 class _ScanPageState extends State<ScanPage> {
+  bool isScanOver = false;
+  List<String> lines = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,6 +43,9 @@ class _ScanPageState extends State<ScanPage> {
               ),
             ],
           ),
+          Wrap(
+            children: lines.map((line) => LineItem(line: line)).toList(),
+          ),
         ],
       ),
     );
@@ -63,7 +68,108 @@ class _ScanPageState extends State<ScanPage> {
           tempList.add(line.text);
         }
       }
-      print(tempList);
+      // print(tempList);
+      setState(() {
+        lines = tempList;
+        isScanOver = true;
+      });
     }
+  }
+}
+
+class LineItem extends StatelessWidget {
+  final String line;
+  const LineItem({super.key, required this.line});
+
+  @override
+  Widget build(BuildContext context) {
+    return LongPressDraggable(
+      data: line,
+      dragAnchorStrategy: childDragAnchorStrategy,
+      feedback: Container(
+        key: GlobalKey(),
+        padding: const EdgeInsets.all(8.0),
+        decoration: const BoxDecoration(
+          color: Colors.black45,
+        ),
+        child: Text(
+          line,
+          style: Theme.of(context)
+              .textTheme
+              .titleMedium!
+              .copyWith(color: Colors.white),
+        ),
+      ),
+      child: Chip(
+        label: Text(line),
+      ),
+    );
+  }
+}
+
+class DropTargetitem extends StatefulWidget {
+  final String property;
+  final Function(String, String) onDrop;
+  const DropTargetitem(
+      {super.key, required this.property, required this.onDrop});
+
+  @override
+  State<DropTargetitem> createState() => _DropTargetitemState();
+}
+
+class _DropTargetitemState extends State<DropTargetitem> {
+  String dragItem = '';
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          flex: 1,
+          child: Text(widget.property),
+        ),
+        Expanded(
+          flex: 2,
+          child: DragTarget<String>(
+            builder: (context, candidateData, rejectedData) => Container(
+              padding: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                border: candidateData.isNotEmpty
+                    ? Border.all(color: Colors.greenAccent, width: 2)
+                    : null,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(dragItem.isNotEmpty ? 'Drop Here' : dragItem),
+                  ),
+                  if (dragItem.isNotEmpty)
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          dragItem = '';
+                        });
+                      },
+                      child: const Icon(
+                        Icons.clear,
+                        size: 15,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            onAccept: (value) {
+              setState(() {
+                if (dragItem.isEmpty) {
+                  dragItem = value;
+                } else {
+                  dragItem += ' $value';
+                }
+              });
+              widget.onDrop(widget.property, dragItem);
+            },
+          ),
+        )
+      ],
+    );
   }
 }
