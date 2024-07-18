@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_null_comparison
+
 import 'package:flutter/material.dart';
 import 'package:v_card_app/models/contact_model.dart';
 import 'package:v_card_app/utils/constants.dart';
