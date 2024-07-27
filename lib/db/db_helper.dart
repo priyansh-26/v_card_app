@@ -15,7 +15,6 @@ class DbHelper {
   $tblContactColImage text,
   $tblContactColFavorite text)''';
 
-  
   Future<Database> _open() async {
     final root = await getDatabasesPath();
     final dbPath = P.join(root, 'contact.db');
@@ -26,5 +25,22 @@ class DbHelper {
         db.execute(_createTableContact);
       },
     );
+  }
+
+  Future<int> insertContact(ContactModel contactModel) async {
+    final db = await _open();
+    return db.insert(
+      tableContact,
+      contactModel.toMap(),
+    );
+  }
+
+  Future<List<ContactModel>> getAllContacts() async {
+    final db = await _open();
+    final mapList = await db.query(
+      tableContact,
+    );
+    return List.generate(
+        mapList.length, (index) => ContactModel.fromMap(mapList[index]));
   }
 }

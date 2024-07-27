@@ -1,8 +1,13 @@
 // ignore_for_file: unnecessary_null_comparison
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:v_card_app/models/contact_model.dart';
+import 'package:v_card_app/pages/home_page.dart';
+import 'package:v_card_app/provider/contact_provider.dart';
 import 'package:v_card_app/utils/constants.dart';
+import 'package:v_card_app/utils/helper_functions.dart';
 
 class FormPage extends StatefulWidget {
   static const String routeName = 'form';
@@ -155,5 +160,15 @@ class _FormPageState extends State<FormPage> {
       widget.contactModel.address = addressController.text;
       widget.contactModel.website = websiteController.text;
     }
+    Provider.of<ContactProvider>(context, listen: false)
+        .insertContact(widget.contactModel)
+        .then((value) {
+      if (value > 0) {
+        showMsg(context, 'Saved');
+        context.goNamed(HomePage.routeName);
+      }
+    }).catchError((error) {
+      showMsg(context, 'Failed to save');
+    });
   }
 }

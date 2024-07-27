@@ -65,4 +65,9 @@ class ContactModel {
         favorite: map[tblContactColFavorite] == 1 ? true : false,
         image: map[tblContactColImage],
       );
+
+  @override
+  String toString() {
+    return 'ContactModel{id: $id, name: $name, mobile: $mobile,email: $email, address: $address, company: $company, designation: $designation, website: $website, image: $image, favorite: $favorite}';
+  }
 }

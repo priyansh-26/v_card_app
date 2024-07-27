@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:v_card_app/models/contact_model.dart';
 import 'package:v_card_app/pages/form_page.dart';
 import 'package:v_card_app/pages/home_page.dart';
 import 'package:v_card_app/pages/scan_page.dart';
+import 'package:v_card_app/provider/contact_provider.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(ChangeNotifierProvider(
+    create:(context) => ContactProvider(),
+    child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

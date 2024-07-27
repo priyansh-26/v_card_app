@@ -79,7 +79,7 @@ class _ScanPageState extends State<ScanPage> {
           if (isScanOver)
             Card(
               child: Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [
                     DragTargetItem(
@@ -158,6 +158,9 @@ class _ScanPageState extends State<ScanPage> {
         break;
       case ContactProperties.email:
         email = value;
+        break;
+      case ContactProperties.address:
+        address = value;
         break;
       case ContactProperties.company:
         company = value;

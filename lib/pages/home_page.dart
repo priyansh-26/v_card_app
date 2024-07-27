@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:v_card_app/pages/scan_page.dart';
+import 'package:v_card_app/provider/contact_provider.dart';
 
 class HomePage extends StatefulWidget {
   static const String routeName = '/';
@@ -12,6 +14,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
+  @override
+  void didChangeDependencies() {
+    Provider.of<ContactProvider>(context, listen: false).getAllContacts();
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,6 +57,22 @@ class _HomePageState extends State<HomePage> {
               label: 'Favorites',
             ),
           ],
+        ),
+      ),
+      body: Consumer<ContactProvider>(
+        builder: (context, provider, child) => ListView.builder(
+          itemCount: provider.contactList.length,
+          itemBuilder: (context, index) {
+            final contact = provider.contactList[index];
+            return ListTile(
+              title: Text(contact.name),
+              trailing: IconButton(
+                onPressed: () {},
+                icon: Icon(
+                    contact.favorite ? Icons.favorite : Icons.favorite_border),
+              ),
+            );
+          },
         ),
       ),
     );
