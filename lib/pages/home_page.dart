@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -46,6 +48,7 @@ class _HomePageState extends State<HomePage> {
             setState(() {
               selectedIndex = index;
             });
+            _fetchData();
           },
           currentIndex: selectedIndex,
           items: const [
@@ -86,10 +89,13 @@ class _HomePageState extends State<HomePage> {
               child: ListTile(
                 title: Text(contact.name),
                 trailing: IconButton(
-                  onPressed: () {},
-                  icon: Icon(contact.favorite
-                      ? Icons.favorite
-                      : Icons.favorite_border),
+                  onPressed: () {
+                    provider.updateFavorite(contact);
+                  },
+                  icon: Icon(
+                    contact.favorite ? Icons.favorite : Icons.favorite_border,
+                    color: Colors.red,
+                  ),
                 ),
               ),
             );
@@ -120,5 +126,16 @@ class _HomePageState extends State<HomePage> {
                 )
               ],
             ));
+  }
+
+  void _fetchData() {
+    switch (selectedIndex) {
+      case 0:
+      Provider.of<ContactProvider>(context, listen: false).getAllContacts();
+        break;
+      case 1:
+      Provider.of<ContactProvider>(context, listen: false).getAllFavoriteContacts();
+        break;
+    }
   }
 }
