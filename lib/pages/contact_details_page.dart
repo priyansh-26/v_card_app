@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -11,7 +13,10 @@ import '../utils/helper_functions.dart';
 class ContactDetailsPage extends StatefulWidget {
   static const String routeName = 'details';
   final int id;
-  const ContactDetailsPage({super.key, required this.id,});
+  const ContactDetailsPage({
+    super.key,
+    required this.id,
+  });
 
   @override
   State<ContactDetailsPage> createState() => _ContactDetailsPageState();
@@ -22,9 +27,10 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
   @override
   void initState() {
     id = widget.id;
-    print(id);
+    // print(id);
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,12 +41,17 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
         builder: (context, provider, child) => FutureBuilder<ContactModel>(
           future: provider.getContactById(id),
           builder: (context, snapshot) {
-            if(snapshot.hasData) {
+            if (snapshot.hasData) {
               final contact = snapshot.data!;
               return ListView(
                 padding: const EdgeInsets.all(8.0),
                 children: [
-                  Image.file(File(contact.image), width: double.infinity, height: 250, fit: BoxFit.cover,),
+                  Image.file(
+                    File(contact.image),
+                    width: double.infinity,
+                    height: 250,
+                    fit: BoxFit.cover,
+                  ),
                   ListTile(
                     title: Text(contact.mobile),
                     trailing: Row(
@@ -62,7 +73,8 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
                     ),
                   ),
                   ListTile(
-                    title: Text(contact.email.isEmpty ? 'Not found' : contact.email),
+                    title: Text(
+                        contact.email.isEmpty ? 'Not found' : contact.email),
                     trailing: IconButton(
                       onPressed: () {
                         _sendEmail(contact.email);
@@ -71,7 +83,9 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
                     ),
                   ),
                   ListTile(
-                    title: Text(contact.address.isEmpty ? 'Not found' : contact.address),
+                    title: Text(contact.address.isEmpty
+                        ? 'Not found'
+                        : contact.address),
                     trailing: IconButton(
                       onPressed: () {
                         _openMap(contact.address);
@@ -80,7 +94,9 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
                     ),
                   ),
                   ListTile(
-                    title: Text(contact.website.isEmpty ? 'Not found' : contact.website),
+                    title: Text(contact.website.isEmpty
+                        ? 'Not found'
+                        : contact.website),
                     trailing: IconButton(
                       onPressed: () {
                         _openBrowser(contact.website);
@@ -91,11 +107,14 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
                 ],
               );
             }
-            if(snapshot.hasError) {
-              return const Center(child: Text('Failed to load data'),);
+            if (snapshot.hasError) {
+              return const Center(
+                child: Text('Failed to load data'),
+              );
             }
-            return const Center(child: Text('Please wait...'),);
-
+            return const Center(
+              child: Text('Please wait...'),
+            );
           },
         ),
       ),
@@ -104,7 +123,7 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
 
   void callContact(String mobile) async {
     final url = 'tel:$mobile';
-    if(await canLaunchUrlString(url)) {
+    if (await canLaunchUrlString(url)) {
       await launchUrlString(url);
     } else {
       showMsg(context, 'Cannot perform this task');
@@ -113,15 +132,15 @@ class _ContactDetailsPageState extends State<ContactDetailsPage> {
 
   void smsContact(String mobile) async {
     final url = 'sms:$mobile';
-    if(await canLaunchUrlString(url)) {
-    await launchUrlString(url);
+    if (await canLaunchUrlString(url)) {
+      await launchUrlString(url);
     } else {
-    showMsg(context, 'Cannot perform this task');
+      showMsg(context, 'Cannot perform this task');
     }
   }
 
   void _sendEmail(String email) async {
-    final url = 'mailto:$email';
+    final url = 'mailto:$email?';
     if (await canLaunchUrlString(url)) {
       await launchUrlString(url);
     } else {
