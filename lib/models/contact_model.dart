@@ -63,7 +63,7 @@ class ContactModel {
         company: map[tblContactColCompany],
         designation: map[tblContactColDesignation],
         website: map[tblContactColWebsite],
-        favorite: map[tblContactColFavorite] =="1" ? true : false,
+        favorite: map[tblContactColFavorite] ==1 ? true : false,
         image: map[tblContactColImage],
       );
 

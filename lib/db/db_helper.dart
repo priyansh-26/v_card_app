@@ -13,16 +13,28 @@ class DbHelper {
   $tblContactColDesignation text,
   $tblContactColWebsite text,
   $tblContactColImage text,
-  $tblContactColFavorite text)''';
+  $tblContactColFavorite integer)''';
 
   Future<Database> _open() async {
     final root = await getDatabasesPath();
     final dbPath = P.join(root, 'contact.db');
     return openDatabase(
       dbPath,
-      version: 1,
+      version: 2,
       onCreate: (db, version) {
         db.execute(_createTableContact);
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion == 1) {
+          await db
+              .execute('alter table $tableContact rename to ${'contact_old'}');
+          await db.execute(_createTableContact);
+          final rows = await db.query('contact_old');
+          for (var row in rows) {
+            await db.insert(tableContact, row);
+          }
+          await db.execute('drop table if exists ${'contact_old'}');
+        }
       },
     );
   }
@@ -43,11 +55,20 @@ class DbHelper {
     return List.generate(
         mapList.length, (index) => ContactModel.fromMap(mapList[index]));
   }
+
+  Future<ContactModel> getContactById(int id) async {
+    final db = await _open();
+    final mapList = await db
+        .query(tableContact, where: '$tblContactColId=?', whereArgs: [id]);
+    return ContactModel.fromMap(mapList.first);
+  }
+
   Future<List<ContactModel>> getAllFavoriteContacts() async {
     final db = await _open();
     final mapList = await db.query(
       tableContact,
-      where: '$tblContactColFavorite=?', whereArgs:[1],
+      where: '$tblContactColFavorite=?',
+      whereArgs: [1],
     );
     return List.generate(
         mapList.length, (index) => ContactModel.fromMap(mapList[index]));
@@ -61,11 +82,13 @@ class DbHelper {
 
   Future<int> updateContactField(int id, Map<String, dynamic> map) async {
     final db = await _open();
-    return db.update(tableContact, map, where: '$tblContactColId=?', whereArgs:[id]);
+    return db.update(tableContact, map,
+        where: '$tblContactColId=?', whereArgs: [id]);
   }
 
-  Future<int> updateFavorite(int id,int value) async{
+  Future<int> updateFavorite(int id, int value) async {
     final db = await _open();
-    return db.update(tableContact, {tblContactColFavorite:value}, where: '$tblContactColId=?', whereArgs: [id]);
+    return db.update(tableContact, {tblContactColFavorite: value},
+        where: '$tblContactColId=?', whereArgs: [id]);
   }
 }
